@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nieces &amp; Nephews Quiz Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:ital,wght@0,400;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #160b33;
+    --bg-mid: #241352;
+    --board: #2d1a5e;
+    --board-edge: #432a82;
+    --ink: #fff7e8;
+    --ink-dim: #b9a8e8;
+    --gold: #ffcf5c;
+    --gold-hot: #ffb62e;
+    --coral: #ff6b81;
+    --mint: #3ddc97;
+    --sky: #4cc9f0;
+    --sunshine: #ffd166;
+    --lavender: #b388ff;
+    --tangerine: #ff9f45;
+    --bubble: #ff5da2;
+    --row-h: 64px;
+    --left-w: 220px;
+    --total-w: 104px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #3b1f7e 0%, transparent 60%),
+      radial-gradient(900px 500px at 85% 110%, #4a1255 0%, transparent 55%),
+      radial-gradient(700px 500px at 8% 100%, #11406b 0%, transparent 55%),
+      linear-gradient(180deg, var(--bg-deep), var(--bg-mid) 60%, var(--bg-deep));
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  /* floating confetti specks in the background */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(3px 3px at 12% 22%, #ffd16655, transparent 60%),
+      radial-gradient(2px 2px at 30% 68%, #4cc9f055, transparent 60%),
+      radial-gradient(3px 3px at 55% 15%, #ff6b8155, transparent 60%),
+      radial-gradient(2px 2px at 70% 80%, #3ddc9755, transparent 60%),
+      radial-gradient(3px 3px at 88% 35%, #b388ff55, transparent 60%),
+      radial-gradient(2px 2px at 45% 92%, #ffcf5c55, transparent 60%);
+    z-index: 0;
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 28px 18px 80px;
+  }
+
+  /* ========== MARQUEE HEADER ========== */
+  .marquee {
+    position: relative;
+    text-align: center;
+    background: linear-gradient(180deg, #3a2178, #2a1458);
+    border: 4px solid var(--gold);
+    border-radius: 26px;
+    padding: 30px 20px 26px;
+    box-shadow:
+      0 0 0 6px #1b0e3e,
+      0 0 45px rgba(255, 207, 92, .22),
+      inset 0 0 60px rgba(0,0,0,.35);
+  }
+  .bulbs {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 14px;
+    position: absolute;
+    left: 0; right: 0;
+  }
+  .bulbs.top { top: 9px; }
+  .bulbs.bottom { bottom: 9px; }
+  .bulb {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: blink 1.1s steps(1) infinite;
+    box-shadow: 0 0 8px 2px rgba(255, 207, 92, .8);
+  }
+  .bulb:nth-child(even) { animation-delay: .55s; }
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: .25; box-shadow: none; }
+  }
+
+  .kicker {
+    font-weight: 900;
+    letter-spacing: .42em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--bubble);
+    text-shadow: 0 0 14px rgba(255, 93, 162, .8);
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Lilita One', cursive;
+    font-size: clamp(34px, 7vw, 64px);
+    line-height: .95;
+    letter-spacing: .01em;
+    color: var(--gold);
+    text-shadow:
+      0 3px 0 #a3570b,
+      0 6px 0 #5e2d00,
+      0 10px 24px rgba(0,0,0,.6),
+      0 0 38px rgba(255, 196, 60, .45);
+  }
+  h1 .amp {
+    color: var(--coral);
+    text-shadow:
+      0 3px 0 #8e1f36,
+      0 6px 0 #4d0f1d,
+      0 10px 24px rgba(0,0,0,.6),
+      0 0 38px rgba(255, 107, 129, .5);
+    display: inline-block;
+    transform: rotate(-8deg) scale(1.08);
+    margin: 0 .06em;
+  }
+  .tagline {
+    margin-top: 8px;
+    color: var(--ink-dim);
+    font-weight: 700;
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  /* ========== CONTROL DESK ========== */
+  .desk {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 26px 0 18px;
+  }
+  .add-player {
+    display: flex;
+    flex: 1 1 300px;
+    gap: 0;
+    background: #1c0f41;
+    border: 3px solid var(--board-edge);
+    border-radius: 999px;
+    padding: 5px;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .add-player:focus-within {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 4px rgba(76, 201, 240, .18);
+  }
+  .add-player input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--ink);
+    font: 800 17px 'Nunito', sans-serif;
+    padding: 8px 16px;
+  }
+  .add-player input::placeholder { color: #8a76c6; font-weight: 700; }
+
+  .btn {
+    font: 900 15px 'Nunito', sans-serif;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 22px;
+    cursor: pointer;
+    color: #2a1200;
+    letter-spacing: .02em;
+    transition: transform .12s ease, filter .15s, box-shadow .15s;
+    box-shadow: 0 4px 0 rgba(0,0,0,.35);
+    white-space: nowrap;
+  }
+  .btn:hover { filter: brightness(1.08); transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,.35); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.35); }
+  .btn-join { background: linear-gradient(180deg, var(--sunshine), var(--gold-hot)); }
+  .btn-round { background: linear-gradient(180deg, #7ee8c0, var(--mint)); color: #00351f; }
+  .btn-crown { background: linear-gradient(180deg, #ff9fb4, var(--coral)); color: #4b0215; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-dim);
+    border: 2px dashed #5b448f;
+    box-shadow: none;
+    padding: 10px 18px;
+  }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--lavender); box-shadow: none; }
+
+  /* ========== SCOREBOARD ========== */
+  .board {
+    background: linear-gradient(180deg, var(--board), #221046);
+    border: 3px solid var(--board-edge);
+    border-radius: 22px;
+    padding: 14px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+    overflow-x: auto;
+  }
+
+  .board-grid { min-width: fit-content; }
+
+  .head-row, .player-row {
+    display: grid;
+    grid-template-columns: minmax(var(--left-w), 1fr) var(--round-cols, 0) var(--total-w);
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* pinned edges: player info sticks left, totals stick right,
+     round columns scroll between them */
+  .head-left, .head-total, .pleft, .ptotal {
+    position: sticky;
+    z-index: 2;
+  }
+  .head-left, .pleft { left: 0; }
+  .head-total, .ptotal { right: 0; }
+  .head-left, .head-total {
+    background: var(--board);
+    border-radius: 10px;
+    padding: 6px 10px;
+  }
+  .head-total { text-align: center; color: var(--gold); }
+
+  .head-row {
+    padding: 4px 0 12px;
+    color: var(--ink-dim);
+    font-weight: 900;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+  }
+  .head-round {
+    text-align: center;
+    position: relative;
+    padding: 6px 2px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .head-round:hover { background: #3a2178; color: var(--ink); }
+  .head-round .rname { display: block; }
+  .head-round .rdel {
+    position: absolute;
+    top: -8px; right: -4px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: none;
+    background: var(--coral);
+    color: #fff;
+    font: 900 11px/1 'Nunito', sans-serif;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  .head-round:hover .rdel { opacity: 1; }
+
+  .rows { display: flex; flex-direction: column; gap: 10px; }
+
+  .player-row {
+    background: linear-gradient(180deg, #392070, #2c1758);
+    border: 2px solid #4b2f8e;
+    border-radius: 16px;
+    padding: 8px 0;
+    position: relative;
+    transition: box-shadow .25s, border-color .25s;
+  }
+
+  .pleft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-self: stretch;
+    background: linear-gradient(180deg, #38206e, #2d1859);
+    padding: 2px 10px 2px 8px;
+    border-radius: 12px 0 0 12px;
+    box-shadow: 10px 0 14px -8px rgba(0, 0, 0, .55);
+  }
+  .pleft::before {
+    content: "";
+    flex: 0 0 auto;
+    align-self: stretch;
+    width: 6px;
+    border-radius: 4px;
+    background: var(--pcolor, var(--sky));
+    box-shadow: 0 0 10px var(--pcolor, var(--sky));
+  }
+
+  .ptotal {
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(180deg, #38206e, #2d1859);
+    border-radius: 0 12px 12px 0;
+    box-shadow: -10px 0 14px -8px rgba(0, 0, 0, .55);
+  }
+  .player-row.leader {
+    border-color: var(--gold);
+    box-shadow: 0 0 22px rgba(255, 207, 92, .3), inset 0 0 30px rgba(255, 207, 92, .05);
+  }
+
+  .avatar {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    background: var(--pcolor, var(--sky));
+    box-shadow: inset 0 -4px 0 rgba(0,0,0,.22);
+    position: relative;
+  }
+  .crown {
+    position: absolute;
+    top: -17px; left: 50%;
+    transform: translateX(-50%) rotate(-12deg);
+    font-size: 19px;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.5));
+    animation: crown-bob 1.6s ease-in-out infinite;
+  }
+  @keyframes crown-bob {
+    0%, 100% { transform: translateX(-50%) rotate(-12deg) translateY(0); }
+    50% { transform: translateX(-50%) rotate(-6deg) translateY(-3px); }
+  }
+
+  .pmeta { min-width: 0; padding-right: 6px; }
+  .pname {
+    font: 900 18px 'Nunito', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .prank {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink-dim);
+  }
+  .pdel {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 2px solid #1c0f41;
+    background: var(--coral);
+    color: #fff;
+    font: 900 12px/1 'Nunito', sans-serif;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s, transform .15s;
+  }
+  .player-row:hover .pdel { opacity: 1; }
+  .pdel:hover { transform: scale(1.15); }
+
+  /* score stepper cell */
+  .cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: #1c0f41;
+    border-radius: 12px;
+    padding: 4px;
+    border: 2px solid transparent;
+    transition: border-color .15s;
+  }
+  .cell:focus-within { border-color: var(--sky); }
+  .cell.active-round { border-color: #6b4fc0; }
+
+  /* joker: one per player, doubles that round's points */
+  .joker-btn {
+    position: absolute;
+    top: -10px; right: -6px;
+    width: 22px; height: 22px;
+    padding: 0;
+    border: 2px solid #34205f;
+    border-radius: 50%;
+    background: #241352;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: .3;
+    z-index: 1;
+    transition: opacity .15s, transform .15s, box-shadow .15s;
+  }
+  .joker-btn:hover { opacity: 1; transform: scale(1.25) rotate(-10deg); }
+  .cell.jokered { border-color: var(--gold); background: #2a173f; }
+  .cell.jokered input { color: var(--gold); }
+  .cell.jokered .joker-btn {
+    opacity: 1;
+    border-color: var(--gold);
+    background: linear-gradient(180deg, var(--sunshine), var(--gold-hot));
+    box-shadow: 0 0 12px rgba(255, 207, 92, .7);
+    animation: crown-bob 1.8s ease-in-out infinite;
+  }
+  .x2 {
+    position: absolute;
+    bottom: -9px; right: -4px;
+    font: 900 10px 'Nunito', sans-serif;
+    color: #2a1200;
+    background: var(--gold);
+    border-radius: 999px;
+    padding: 1px 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.4);
+  }
+  .step {
+    width: 26px; height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: #34205f;
+    color: var(--ink-dim);
+    font: 900 16px 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: background .12s, color .12s;
+    flex: 0 0 auto;
+  }
+  .step:hover { background: #4b2f8e; color: var(--ink); }
+  .step:active { background: var(--lavender); color: #1c0f41; }
+  .cell input {
+    width: 44px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--ink);
+    font: 900 18px 'Nunito', sans-serif;
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .cell input::-webkit-outer-spin-button,
+  .cell input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  .total {
+    text-align: center;
+    font-family: 'Lilita One', cursive;
+    font-size: 30px;
+    color: var(--gold);
+    text-shadow: 0 2px 0 rgba(0,0,0,.45), 0 0 18px rgba(255, 207, 92, .35);
+  }
+  .total.bump { animation: bump .35s ease; }
+  @keyframes bump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35) rotate(-3deg); }
+    100% { transform: scale(1); }
+  }
+
+  /* row entrance + FLIP moves handled in JS; just provide transition */
+  .player-row.moving { transition: transform .5s cubic-bezier(.22, 1.2, .36, 1); }
+  .player-row.entering { animation: pop-in .4s cubic-bezier(.22, 1.4, .36, 1); }
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(.85) translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ========== EMPTY STATE ========== */
+  .empty {
+    text-align: center;
+    padding: 56px 20px;
+    color: var(--ink-dim);
+  }
+  .empty .big { font-size: 54px; margin-bottom: 12px; animation: crown-bob 2s ease-in-out infinite; display: inline-block; }
+  .empty p { font-weight: 800; font-size: 18px; }
+  .empty small { font-weight: 700; }
+
+  /* ========== FOOTER ACTIONS ========== */
+  .hint {
+    margin-top: 12px;
+    text-align: center;
+    color: var(--ink-dim);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .hint b { color: var(--gold); }
+
+  .footer-desk {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  /* ========== WINNER OVERLAY ========== */
+  .overlay {
+    position: fixed; inset: 0;
+    z-index: 50;
+    display: none;
+    place-items: center;
+    background: rgba(12, 5, 32, .82);
+    backdrop-filter: blur(6px);
+  }
+  .overlay.show { display: grid; }
+  .winner-card {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    background: linear-gradient(180deg, #3a2178, #241352);
+    border: 4px solid var(--gold);
+    border-radius: 28px;
+    padding: 46px 54px;
+    max-width: min(92vw, 520px);
+    box-shadow: 0 0 80px rgba(255, 207, 92, .35);
+    animation: pop-in .5s cubic-bezier(.22, 1.4, .36, 1);
+  }
+  .winner-card .trophy { font-size: 74px; display: inline-block; animation: crown-bob 1.4s ease-in-out infinite; }
+  .winner-card h2 {
+    font-family: 'Lilita One', cursive;
+    font-size: clamp(30px, 6vw, 46px);
+    color: var(--gold);
+    text-shadow: 0 3px 0 #a3570b, 0 0 30px rgba(255,196,60,.5);
+    margin: 10px 0 4px;
+  }
+  .winner-card .wname { color: var(--ink); font-size: clamp(26px, 5vw, 38px); }
+  .winner-card .wscore { font-weight: 900; color: var(--mint); font-size: 20px; margin-bottom: 22px; }
+  #confetti-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+
+  @media (max-width: 560px) {
+    :root { --row-h: auto; --left-w: 148px; --total-w: 72px; }
+    .stage { padding: 16px 10px 60px; }
+    .marquee { padding: 24px 12px 20px; }
+    .bulb { width: 7px; height: 7px; }
+    .pleft { gap: 7px; padding: 2px 7px 2px 6px; }
+    .pleft::before { width: 4px; }
+    .avatar { width: 38px; height: 38px; font-size: 21px; }
+    .pname { font-size: 15px; }
+    .total { font-size: 24px; }
+    .step { width: 22px; height: 28px; }
+    .cell input { width: 34px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="marquee">
+    <div class="bulbs top" aria-hidden="true"></div>
+    <div class="kicker">★ Family Quiz Night ★</div>
+    <h1>Nieces <span class="amp">&amp;</span> Nephews</h1>
+    <p class="tagline">The official big-deal totally-serious quiz scoreboard</p>
+    <div class="bulbs bottom" aria-hidden="true"></div>
+  </header>
+
+  <div class="desk">
+    <form class="add-player" id="add-form">
+      <input id="name-input" type="text" maxlength="20" placeholder="Who's playing? Type a name…" autocomplete="off">
+      <button class="btn btn-join" type="submit">+ Join the Game</button>
+    </form>
+    <button class="btn btn-round" id="add-round">+ New Round</button>
+  </div>
+
+  <main class="board">
+    <div class="board-grid" id="board-grid"></div>
+    <div class="empty" id="empty" hidden>
+      <span class="big">👑</span>
+      <p>The scoreboard is empty!</p>
+      <small>Add the nieces and nephews above to start the showdown.</small>
+    </div>
+  </main>
+
+  <p class="hint">🃏 <b>Joker rule:</b> everyone gets one joker — tap the card on a score box to play it there and score <b>double points</b> for that round. Tap again to take it back.</p>
+
+  <div class="footer-desk">
+    <button class="btn btn-ghost" id="reset">↻ New Game</button>
+    <button class="btn btn-crown" id="finish">👑 Crown the Champion!</button>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="winner-card">
+    <span class="trophy" id="trophy">🏆</span>
+    <h2 id="win-title">Champion!</h2>
+    <div class="wname" id="win-name"></div>
+    <div class="wscore" id="win-score"></div>
+    <button class="btn btn-join" id="close-overlay">Back to the Board</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'nn-quiz-scoreboard-v1';
+  var EMOJIS = ['🦊', '🐸', '🦄', '🐯', '🐙', '🐼', '🦖', '🐨', '🦁', '🐷', '🐵', '🐧'];
+  var COLORS = ['#4cc9f0', '#ff6b81', '#3ddc97', '#ffd166', '#b388ff', '#ff9f45', '#ff5da2', '#6ee7f5', '#a3e635', '#f97316', '#e879f9', '#34d399'];
+
+  var state = load() || {
+    players: [],      // { id, name, emoji, color, scores: [] }
+    rounds: ['Round 1'],
+    nextId: 1
+  };
+
+  var grid = document.getElementById('board-grid');
+  var emptyEl = document.getElementById('empty');
+
+  // ---------- persistence ----------
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  // ---------- helpers ----------
+  function totalOf(p) {
+    var t = 0;
+    for (var i = 0; i < state.rounds.length; i++) {
+      t += (p.scores[i] || 0) * (p.joker === i ? 2 : 1);
+    }
+    return t;
+  }
+
+  function ranked() {
+    return state.players.slice().sort(function (a, b) {
+      return totalOf(b) - totalOf(a) || a.id - b.id;
+    });
+  }
+
+  function rankLabel(i, total, prevTotal) {
+    if (total === 0 && i > 0) return 'warming up…';
+    var medals = ['1st 🥇', '2nd 🥈', '3rd 🥉'];
+    return medals[i] || (i + 1) + 'th';
+  }
+
+  // ---------- rendering ----------
+  function render(opts) {
+    opts = opts || {};
+    var board = document.querySelector('.board');
+    var prevScroll = board.scrollLeft;
+
+    // FLIP: capture old positions
+    var oldRects = {};
+    grid.querySelectorAll('.player-row').forEach(function (el) {
+      oldRects[el.dataset.id] = el.getBoundingClientRect();
+    });
+
+    grid.style.setProperty('--round-cols', 'repeat(' + state.rounds.length + ', 108px)');
+
+    grid.innerHTML = '';
+    emptyEl.hidden = state.players.length > 0;
+    if (!state.players.length) return;
+
+    // header
+    var head = document.createElement('div');
+    head.className = 'head-row';
+    head.innerHTML = '<div class="head-left">Player</div>';
+    state.rounds.forEach(function (rname, ri) {
+      var h = document.createElement('div');
+      h.className = 'head-round';
+      h.title = 'Click to rename';
+      h.innerHTML = '<span class="rname"></span>' +
+        (state.rounds.length > 1 ? '<button class="rdel" title="Remove round">×</button>' : '');
+      h.querySelector('.rname').textContent = rname;
+      h.addEventListener('click', function (e) {
+        if (e.target.classList.contains('rdel')) return;
+        var name = prompt('Round name:', state.rounds[ri]);
+        if (name && name.trim()) { state.rounds[ri] = name.trim().slice(0, 18); save(); render(); }
+      });
+      var del = h.querySelector('.rdel');
+      if (del) del.addEventListener('click', function () {
+        if (!confirm('Remove "' + state.rounds[ri] + '" and its scores?')) return;
+        state.rounds.splice(ri, 1);
+        state.players.forEach(function (p) {
+          p.scores.splice(ri, 1);
+          if (p.joker === ri) p.joker = null;
+          else if (p.joker > ri) p.joker--;
+        });
+        save(); render();
+      });
+      head.appendChild(h);
+    });
+    var ht = document.createElement('div');
+    ht.className = 'head-total';
+    ht.textContent = 'Total';
+    head.appendChild(ht);
+    grid.appendChild(head);
+
+    // rows (sorted by total)
+    var rows = document.createElement('div');
+    rows.className = 'rows';
+    grid.appendChild(rows);
+
+    var order = ranked();
+    var topTotal = order.length ? totalOf(order[0]) : 0;
+
+    order.forEach(function (p, idx) {
+      var t = totalOf(p);
+      var isLeader = t > 0 && t === topTotal;
+
+      var row = document.createElement('div');
+      row.className = 'player-row' + (isLeader ? ' leader' : '');
+      row.dataset.id = p.id;
+      row.style.setProperty('--pcolor', p.color);
+
+      var pleft = document.createElement('div');
+      pleft.className = 'pleft';
+
+      var av = document.createElement('div');
+      av.className = 'avatar';
+      av.textContent = p.emoji;
+      if (isLeader) {
+        var c = document.createElement('span');
+        c.className = 'crown';
+        c.textContent = '👑';
+        av.appendChild(c);
+      }
+      pleft.appendChild(av);
+
+      var meta = document.createElement('div');
+      meta.className = 'pmeta';
+      var nm = document.createElement('div');
+      nm.className = 'pname';
+      nm.textContent = p.name;
+      var rk = document.createElement('div');
+      rk.className = 'prank';
+      rk.textContent = rankLabel(idx, t) +
+        (p.joker == null ? ' · 🃏 in hand' : ' · 🃏 on ' + state.rounds[p.joker]);
+      meta.appendChild(nm); meta.appendChild(rk);
+      pleft.appendChild(meta);
+      row.appendChild(pleft);
+
+      state.rounds.forEach(function (_, ri) {
+        row.appendChild(makeCell(p, ri));
+      });
+
+      var ptotal = document.createElement('div');
+      ptotal.className = 'ptotal';
+      var tot = document.createElement('div');
+      tot.className = 'total';
+      tot.textContent = t;
+      if (opts.bumpId === p.id) tot.classList.add('bump');
+      ptotal.appendChild(tot);
+
+      var del = document.createElement('button');
+      del.className = 'pdel';
+      del.title = 'Remove player';
+      del.textContent = '×';
+      del.addEventListener('click', function () {
+        if (!confirm('Remove ' + p.name + ' from the game?')) return;
+        state.players = state.players.filter(function (x) { return x.id !== p.id; });
+        save(); render();
+      });
+      ptotal.appendChild(del);
+      row.appendChild(ptotal);
+
+      if (opts.enteringId === p.id) row.classList.add('entering');
+      rows.appendChild(row);
+    });
+
+    // keep the user's horizontal position across re-renders;
+    // scrollToEnd pushes the latest round into view (early rounds scroll off)
+    board.scrollLeft = opts.scrollToEnd ? board.scrollWidth : prevScroll;
+
+    // FLIP: animate rows that moved
+    rows.querySelectorAll('.player-row').forEach(function (el) {
+      var old = oldRects[el.dataset.id];
+      if (!old) return;
+      var now = el.getBoundingClientRect();
+      var dy = old.top - now.top;
+      if (Math.abs(dy) < 2) return;
+      el.style.transform = 'translateY(' + dy + 'px)';
+      requestAnimationFrame(function () {
+        el.classList.add('moving');
+        el.style.transform = '';
+        el.addEventListener('transitionend', function te() {
+          el.classList.remove('moving');
+          el.removeEventListener('transitionend', te);
+        });
+      });
+    });
+  }
+
+  function makeCell(p, ri) {
+    var jokered = p.joker === ri;
+    var cell = document.createElement('div');
+    cell.className = 'cell' +
+      (ri === state.rounds.length - 1 ? ' active-round' : '') +
+      (jokered ? ' jokered' : '');
+
+    var joker = document.createElement('button');
+    joker.className = 'joker-btn';
+    joker.type = 'button';
+    joker.textContent = '🃏';
+    joker.title = jokered
+      ? 'Joker played here — double points! Click to take it back.'
+      : 'Play ' + p.name + "'s joker on " + state.rounds[ri] + ' (doubles the points, one per player)';
+    joker.addEventListener('click', function () {
+      p.joker = jokered ? null : ri;
+      save();
+      render({ bumpId: p.id });
+    });
+    cell.appendChild(joker);
+
+    if (jokered) {
+      var x2 = document.createElement('span');
+      x2.className = 'x2';
+      x2.textContent = '×2';
+      cell.appendChild(x2);
+    }
+
+    var minus = document.createElement('button');
+    minus.className = 'step'; minus.type = 'button'; minus.textContent = '−';
+    var plus = document.createElement('button');
+    plus.className = 'step'; plus.type = 'button'; plus.textContent = '+';
+
+    var input = document.createElement('input');
+    input.type = 'number';
+    input.value = p.scores[ri] || 0;
+    input.setAttribute('aria-label', p.name + ' — ' + state.rounds[ri] + ' score');
+
+    function apply(delta) {
+      p.scores[ri] = (p.scores[ri] || 0) + delta;
+      save();
+      render({ bumpId: p.id });
+    }
+    minus.addEventListener('click', function () { apply(-1); });
+    plus.addEventListener('click', function () { apply(1); });
+    input.addEventListener('change', function () {
+      var v = parseInt(input.value, 10);
+      p.scores[ri] = isNaN(v) ? 0 : v;
+      save();
+      render({ bumpId: p.id });
+    });
+    input.addEventListener('focus', function () { input.select(); });
+
+    cell.appendChild(minus);
+    cell.appendChild(input);
+    cell.appendChild(plus);
+    return cell;
+  }
+
+  // ---------- marquee bulbs ----------
+  ['top', 'bottom'].forEach(function (pos) {
+    var strip = document.querySelector('.bulbs.' + pos);
+    for (var i = 0; i < 24; i++) {
+      var b = document.createElement('span');
+      b.className = 'bulb';
+      strip.appendChild(b);
+    }
+  });
+
+  // ---------- controls ----------
+  document.getElementById('add-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var inp = document.getElementById('name-input');
+    var name = inp.value.trim();
+    if (!name) return;
+    var n = state.players.length;
+    var player = {
+      id: state.nextId++,
+      name: name,
+      emoji: EMOJIS[n % EMOJIS.length],
+      color: COLORS[n % COLORS.length],
+      scores: [],
+      joker: null
+    };
+    state.players.push(player);
+    inp.value = '';
+    inp.focus();
+    save();
+    render({ enteringId: player.id });
+  });
+
+  document.getElementById('add-round').addEventListener('click', function () {
+    state.rounds.push('Round ' + (state.rounds.length + 1));
+    save();
+    render({ scrollToEnd: true });
+  });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    if (!confirm('Start a brand new game? All players and scores will be cleared.')) return;
+    state = { players: [], rounds: ['Round 1'], nextId: 1 };
+    save();
+    render();
+  });
+
+  // ---------- winner overlay + confetti ----------
+  var overlay = document.getElementById('overlay');
+  var canvas = document.getElementById('confetti-canvas');
+  var ctx = canvas.getContext('2d');
+  var confetti = [];
+  var confettiRunning = false;
+
+  document.getElementById('finish').addEventListener('click', function () {
+    if (!state.players.length) { alert('Add some players first!'); return; }
+    var order = ranked();
+    var top = totalOf(order[0]);
+    var winners = order.filter(function (p) { return totalOf(p) === top; });
+
+    var tie = winners.length > 1;
+    document.getElementById('trophy').textContent = tie ? '🤝' : '🏆';
+    document.getElementById('win-title').textContent = tie ? "It's a Tie!" : 'Champion!';
+    document.getElementById('win-name').textContent = winners.map(function (p) {
+      return p.emoji + ' ' + p.name;
+    }).join('  •  ');
+    document.getElementById('win-score').textContent = top + ' points';
+
+    overlay.classList.add('show');
+    startConfetti();
+  });
+
+  document.getElementById('close-overlay').addEventListener('click', function () {
+    overlay.classList.remove('show');
+    confettiRunning = false;
+  });
+
+  function startConfetti() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    confetti = [];
+    for (var i = 0; i < 180; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * canvas.height,
+        w: 7 + Math.random() * 7,
+        h: 10 + Math.random() * 8,
+        vy: 2.2 + Math.random() * 3.2,
+        vx: -1.4 + Math.random() * 2.8,
+        rot: Math.random() * Math.PI,
+        vr: -0.12 + Math.random() * 0.24,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)]
+      });
+    }
+    if (!confettiRunning) {
+      confettiRunning = true;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  function tick() {
+    if (!confettiRunning) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confetti.forEach(function (f) {
+      f.y += f.vy;
+      f.x += f.vx + Math.sin(f.y / 40) * .8;
+      f.rot += f.vr;
+      if (f.y > canvas.height + 30) { f.y = -20; f.x = Math.random() * canvas.width; }
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(f.rot);
+      ctx.fillStyle = f.color;
+      ctx.fillRect(-f.w / 2, -f.h / 2, f.w, f.h);
+      ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('resize', function () {
+    if (overlay.classList.contains('show')) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+  });
+
+  render({ scrollToEnd: true });
+})();
+</script>
+</body>
+</html>
